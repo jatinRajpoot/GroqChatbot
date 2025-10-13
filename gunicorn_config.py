@@ -4,11 +4,9 @@ Production configuration for Gunicorn
 import multiprocessing
 import os
 
-# Early gevent monkey patching to avoid SSL import warnings
-def on_starting(server):
-    """Called just before the master process is initialized."""
-    from gevent import monkey
-    monkey.patch_all()
+# Note: If using 'gevent' worker, monkey patching should be done in a separate
+# pre-fork module or wsgi file, not in this config file (too late).
+# For 'gthread' or 'sync' workers, no monkey patching is needed.
 
 # Server socket
 bind = f"0.0.0.0:{os.getenv('PORT', '5000')}"
