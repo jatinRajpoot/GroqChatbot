@@ -4,15 +4,25 @@ Production configuration for Gunicorn
 import multiprocessing
 import os
 
+# Early gevent monkey patching to avoid SSL import warnings
+def on_starting(server):
+    """Called just before the master process is initialized."""
+    from gevent import monkey
+    monkey.patch_all()
+
 # Server socket
 bind = f"0.0.0.0:{os.getenv('PORT', '5000')}"
 backlog = 2048
 
 # Worker processes
 workers = int(os.getenv('GUNICORN_WORKERS', multiprocessing.cpu_count() * 2 + 1))
-worker_class = 'gevent'  # Use gevent for async I/O
+# Alternative worker classes to avoid monkey-patch warnings:
+# - 'sync': Standard synchronous workers (stable, no warnings)
+# - 'gthread': Thread-based workers (good for I/O bound apps)
+# - 'gevent': Async I/O with greenlets (requires early patching)
+worker_class = os.getenv('WORKER_CLASS', 'gthread')  # Changed from 'gevent' to avoid warnings
 worker_connections = 1000
-threads = int(os.getenv('GUNICORN_THREADS', 2))
+threads = int(os.getenv('GUNICORN_THREADS', 4))  # Increased for gthread
 max_requests = 1000
 max_requests_jitter = 50
 timeout = 120
