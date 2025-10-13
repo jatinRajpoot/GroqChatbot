@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groq Chatbot - AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+    
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    New Chat
+                </button>
+            </div>
+            
+            <div class="sidebar-content">
+                <div class="chat-sessions" id="chatSessions">
+                    <!-- Chat sessions will be added here -->
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="clear-btn" id="clearHistoryBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="3 6 5 6 21 6"></polyline>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                    Clear History
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
+                
+                <div class="model-selector">
+                    <label for="modelSelect">Model:</label>
+                    <select id="modelSelect" class="model-select">
+                        <option value="">Loading models...</option>
+                    </select>
+                </div>
+                
+                <div class="tts-selector">
+                    <label for="ttsSelect">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                            <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                        </svg>
+                    </label>
+                    <select id="ttsSelect" class="tts-select">
+                        <option value="disabled">TTS: Disabled</option>
+                        <optgroup label="English Voices (PlayAI)">
+                            <option value="playai-tts|Arista-PlayAI">Arista (Female)</option>
+                            <option value="playai-tts|Atlas-PlayAI">Atlas (Male)</option>
+                            <option value="playai-tts|Basil-PlayAI">Basil (Male)</option>
+                            <option value="playai-tts|Briggs-PlayAI">Briggs (Male)</option>
+                            <option value="playai-tts|Calum-PlayAI">Calum (Male)</option>
+                            <option value="playai-tts|Celeste-PlayAI">Celeste (Female)</option>
+                            <option value="playai-tts|Cheyenne-PlayAI">Cheyenne (Female)</option>
+                            <option value="playai-tts|Chip-PlayAI">Chip (Male)</option>
+                            <option value="playai-tts|Cillian-PlayAI">Cillian (Male)</option>
+                            <option value="playai-tts|Deedee-PlayAI">Deedee (Female)</option>
+                            <option value="playai-tts|Fritz-PlayAI" selected>Fritz (Male)</option>
+                            <option value="playai-tts|Gail-PlayAI">Gail (Female)</option>
+                            <option value="playai-tts|Indigo-PlayAI">Indigo (Neutral)</option>
+                            <option value="playai-tts|Mamaw-PlayAI">Mamaw (Female)</option>
+                            <option value="playai-tts|Mason-PlayAI">Mason (Male)</option>
+                            <option value="playai-tts|Mikail-PlayAI">Mikail (Male)</option>
+                            <option value="playai-tts|Mitch-PlayAI">Mitch (Male)</option>
+                            <option value="playai-tts|Quinn-PlayAI">Quinn (Female)</option>
+                            <option value="playai-tts|Thunder-PlayAI">Thunder (Male)</option>
+                        </optgroup>
+                        <optgroup label="Arabic Voices (PlayAI)">
+                            <option value="playai-tts-arabic|Ahmad-PlayAI">Ahmad (Male)</option>
+                            <option value="playai-tts-arabic|Amira-PlayAI">Amira (Female)</option>
+                            <option value="playai-tts-arabic|Khalid-PlayAI">Khalid (Male)</option>
+                            <option value="playai-tts-arabic|Nasser-PlayAI">Nasser (Male)</option>
+                        </optgroup>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Chat Area -->
+            <div class="chat-container" id="chatContainer">
+                <div class="welcome-screen" id="welcomeScreen">
+                    <div class="welcome-content">
+                        <h1>Groq AI Chatbot</h1>
+                        <p>Powered by open-source AI models through Groq API</p>
+                        <div class="example-prompts">
+                            <button class="example-prompt" data-prompt="Explain quantum computing in simple terms">
+                                💡 Explain quantum computing
+                            </button>
+                            <button class="example-prompt" data-prompt="Write a Python function to sort a list">
+                                💻 Write Python code
+                            </button>
+                            <button class="example-prompt" data-prompt="What are the best practices for web development?">
+                                🌐 Web development tips
+                            </button>
+                            <button class="example-prompt" data-prompt="Help me brainstorm ideas for a startup">
+                                🚀 Brainstorm ideas
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="messages" id="messages">
+                    <!-- Messages will be added here -->
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <textarea 
+                        id="messageInput" 
+                        placeholder="Send a message..." 
+                        rows="1"
+                        maxlength="4000"
+                    ></textarea>
+                    <button id="sendBtn" class="send-btn" disabled>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                        </svg>
+                    </button>
+                </div>
+                <div class="input-footer">
+                    <small>Press Enter to send, Shift+Enter for new line</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>
