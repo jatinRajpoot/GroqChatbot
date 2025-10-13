@@ -12,6 +12,9 @@ services:
       - GROQ_API_KEY=${GROQ_API_KEY}
       - PORT=5000
       - LOG_LEVEL=${LOG_LEVEL:-info}
+      - WORKER_CLASS=${WORKER_CLASS:-gthread}
+      - GUNICORN_WORKERS=${GUNICORN_WORKERS:-4}
+      - GUNICORN_THREADS=${GUNICORN_THREADS:-4}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/health', timeout=5)"]
