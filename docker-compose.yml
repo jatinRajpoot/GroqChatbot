@@ -5,17 +5,13 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: groq-chatbot
     ports:
       - "5000:5000"
     environment:
       - GROQ_API_KEY=${GROQ_API_KEY}
-      - FLASK_ENV=production
       - PORT=5000
-    volumes:
-      # Persist database
-      - ./data:/app/data
-      # Mount database file if it exists
-      - ./chatbot.db:/app/chatbot.db
+      - LOG_LEVEL=${LOG_LEVEL:-info}
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "python", "-c", "import requests; requests.get('http://localhost:5000/health', timeout=5)"]

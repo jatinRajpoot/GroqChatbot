@@ -8,49 +8,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <!-- Sidebar Overlay for Mobile -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    
     <div class="app-container">
-        <!-- Sidebar -->
-        <div class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <button class="new-chat-btn" id="newChatBtn">
+        <!-- Main Content (No Sidebar - Memory Only Mode) -->
+        <div class="main-content" style="margin-left: 0; width: 100%;">
+            <!-- Header -->
+            <div class="header">
+                <div class="header-title">
+                    <h2 style="margin: 0; color: var(--text-primary);">🤖 Groq AI Chat</h2>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary); margin-left: 10px;">(Memory Only - No History Saved)</span>
+                </div>
+                
+                <button class="new-chat-btn" id="newChatBtn" title="Clear chat and start fresh">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                     New Chat
-                </button>
-            </div>
-            
-            <div class="sidebar-content">
-                <div class="chat-sessions" id="chatSessions">
-                    <!-- Chat sessions will be added here -->
-                </div>
-            </div>
-            
-            <div class="sidebar-footer">
-                <button class="clear-btn" id="clearHistoryBtn">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                    Clear History
-                </button>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="main-content">
-            <!-- Header -->
-            <div class="header">
-                <button class="sidebar-toggle" id="sidebarToggle">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
                 </button>
                 
                 <div class="model-selector">
@@ -104,21 +77,66 @@
             <div class="chat-container" id="chatContainer">
                 <div class="welcome-screen" id="welcomeScreen">
                     <div class="welcome-content">
-                        <h1>Groq AI Chatbot</h1>
-                        <p>Powered by open-source AI models through Groq API</p>
-                        <div class="example-prompts">
-                            <button class="example-prompt" data-prompt="Explain quantum computing in simple terms">
-                                💡 Explain quantum computing
-                            </button>
-                            <button class="example-prompt" data-prompt="Write a Python function to sort a list">
-                                💻 Write Python code
-                            </button>
-                            <button class="example-prompt" data-prompt="What are the best practices for web development?">
-                                🌐 Web development tips
-                            </button>
-                            <button class="example-prompt" data-prompt="Help me brainstorm ideas for a startup">
-                                🚀 Brainstorm ideas
-                            </button>
+                        <h1>🤖 Welcome to Groq AI Chat</h1>
+                        <p class="welcome-subtitle">Powered by 20+ open-source AI models</p>
+                        
+                        <!-- Quick Guide -->
+                        <div class="quick-guide">
+                            <div class="guide-card">
+                                <div class="guide-icon">🎯</div>
+                                <h3>Choose Your Model</h3>
+                                <p>Select from <strong>20+ AI models</strong> in the dropdown above</p>
+                                <div class="model-examples">
+                                    <span class="model-tag">Mixtral 8x7B</span>
+                                    <span class="model-tag">LLaMA 3.1</span>
+                                    <span class="model-tag">Qwen 2.5</span>
+                                </div>
+                            </div>
+                            
+                            <div class="guide-card">
+                                <div class="guide-icon">🔊</div>
+                                <h3>Text-to-Speech</h3>
+                                <p>Choose from <strong>23 voices</strong> to hear responses</p>
+                                <p class="guide-hint">Click <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle;"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg> on any response</p>
+                            </div>
+                            
+                            <div class="guide-card">
+                                <div class="guide-icon">💬</div>
+                                <h3>Start Chatting</h3>
+                                <p>Type your message below or try an example prompt</p>
+                                <p class="guide-hint"><kbd>Enter</kbd> to send • <kbd>Shift+Enter</kbd> for new line</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Example Prompts -->
+                        <div class="prompts-section">
+                            <h3 class="prompts-title">✨ Try These Prompts</h3>
+                            <div class="example-prompts">
+                                <button class="example-prompt" data-prompt="Explain quantum computing in simple terms">
+                                    <span class="prompt-icon">💡</span>
+                                    <span class="prompt-text">Explain quantum computing</span>
+                                </button>
+                                <button class="example-prompt" data-prompt="Write a Python function to sort a list">
+                                    <span class="prompt-icon">💻</span>
+                                    <span class="prompt-text">Write Python code</span>
+                                </button>
+                                <button class="example-prompt" data-prompt="What are the best practices for web development?">
+                                    <span class="prompt-icon">🌐</span>
+                                    <span class="prompt-text">Web development tips</span>
+                                </button>
+                                <button class="example-prompt" data-prompt="Help me brainstorm ideas for a startup">
+                                    <span class="prompt-icon">🚀</span>
+                                    <span class="prompt-text">Brainstorm ideas</span>
+                                </button>
+                                <button class="example-prompt" data-prompt="Create a detailed comparison table of programming languages">
+                                    <span class="prompt-icon">📊</span>
+                                    <span class="prompt-text">Compare programming languages</span>
+                                </button>
+                                <button class="example-prompt" data-prompt="Write a creative short story about AI">
+                                    <span class="prompt-icon">✍️</span>
+                                    <span class="prompt-text">Write a creative story</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

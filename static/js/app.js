@@ -23,10 +23,11 @@ const ttsSelect = document.getElementById('ttsSelect');
 document.addEventListener('DOMContentLoaded', () => {
     loadModels();
     loadChatHistory();
-    loadSessions();  // Load sidebar sessions
+    // Sessions removed - no database
     loadTTSPreference(); // Load saved TTS voice
     setupEventListeners();
     autoResizeTextarea();
+    highlightModelSelector(); // Highlight model selector on first visit
 });
 
 // Setup event listeners
@@ -76,10 +77,18 @@ function setupEventListeners() {
     // Example prompts
     document.querySelectorAll('.example-prompt').forEach(btn => {
         btn.addEventListener('click', (e) => {
-            const prompt = e.target.dataset.prompt;
-            messageInput.value = prompt;
-            sendBtn.disabled = false;
-            messageInput.focus();
+            const prompt = e.currentTarget.dataset.prompt;
+            if (prompt) {
+                messageInput.value = prompt;
+                sendBtn.disabled = false;
+                messageInput.focus();
+                // Scroll to input on mobile
+                if (window.innerWidth <= 768) {
+                    setTimeout(() => {
+                        messageInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }, 100);
+                }
+            }
         });
     });
 }
@@ -355,7 +364,7 @@ async function sendMessage() {
         
         if (data.success) {
             addMessage('assistant', data.message, data.timestamp);
-            loadSessions(); // Reload sessions to update message count
+            // Sessions removed - no database
         } else {
             showError(data.error || 'Failed to get response');
         }
@@ -579,7 +588,7 @@ async function startNewChat() {
                 showWelcomeScreen();
                 messageInput.value = '';
                 sendBtn.disabled = true;
-                loadSessions(); // Reload sidebar sessions
+                // Sessions removed - no database
             }
         } catch (error) {
             console.error('Error starting new chat:', error);
@@ -625,6 +634,24 @@ function closeSidebar() {
     sidebar.classList.remove('open');
     if (sidebarOverlay) {
         sidebarOverlay.classList.remove('active');
+    }
+}
+
+// Highlight model selector on first visit
+function highlightModelSelector() {
+    // Check if user has already seen the highlight
+    const hasSeenHighlight = localStorage.getItem('model_selector_seen');
+    
+    if (!hasSeenHighlight && welcomeScreen.style.display !== 'none') {
+        // Add a subtle pulse animation to model selector
+        setTimeout(() => {
+            modelSelect.style.animation = 'pulse-highlight 2s ease-in-out 3';
+            // Mark as seen after 6 seconds (3 pulses)
+            setTimeout(() => {
+                modelSelect.style.animation = '';
+                localStorage.setItem('model_selector_seen', 'true');
+            }, 6000);
+        }, 1000); // Start after 1 second
     }
 }
 
