@@ -14,13 +14,15 @@ app.secret_key = secrets.token_hex(16)
 # Initialize Groq client (optional)
 try:
     groq_client = GroqClient(api_key=os.getenv('GROQ_API_KEY'))
-except Exception:
+except Exception as e:
+    print(f"Warning: Groq client initialization failed: {e}")
     groq_client = None
 
 # Initialize Gemini client if available
 try:
     gemini_client = GeminiClient(api_key=os.getenv('GEMINI_API_KEY') or os.getenv('GOOGLE_API_KEY'))
-except Exception:
+except Exception as e:
+    print(f"Warning: Gemini client initialization failed: {e}")
     gemini_client = None
 
 # In-memory storage for chat history (session only)
