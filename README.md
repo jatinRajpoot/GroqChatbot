@@ -1,6 +1,6 @@
 # Groq AI Chatbot 🤖
 
-A modern, ChatGPT-like web application built with Flask and powered by Groq's API for accessing open-source AI models. Features a sleek dark interface, text-to-speech support, and optimized for production deployment.
+A modern, ChatGPT-like web application built with Flask and powered by Groq's API and Google Gemini. Features a sleek dark interface, text-to-speech support, and optimized for production deployment.
 
 ![Groq Chatbot](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)
@@ -48,6 +48,7 @@ The application features:
 
 - Python 3.11 or higher
 - Groq API key (free tier available)
+- Optional: Google Gemini API key (set `GEMINI_API_KEY` or `GOOGLE_API_KEY`)
 - Docker (optional, for containerized deployment)
 
 ## Quick Start 🚀
@@ -102,6 +103,9 @@ pip install -r requirements.txt
 Create a `.env` file:
 ```bash
 GROQ_API_KEY=your_actual_groq_api_key_here
+# Either variable works for Gemini
+GEMINI_API_KEY=your_google_gemini_api_key_here
+# or GOOGLE_API_KEY=your_google_gemini_api_key_here
 PORT=5000
 ```
 
@@ -181,7 +185,7 @@ AIoutputs/
 
 - `GET /` - Main chat interface
 - `GET /health` - Health check endpoint (for Docker/monitoring)
-- `GET /api/models` - List available AI models
+- `GET /api/models?provider=groq|gemini|all` - List available AI models
 - `POST /api/chat` - Send chat message
 - `POST /api/tts` - Text-to-speech conversion
 - `GET /api/history` - Get current session chat history
@@ -189,15 +193,12 @@ AIoutputs/
 
 ## Available Models 🎭
 
-The application supports 20+ open-source models through Groq:
+The application supports models from Groq and Google Gemini:
 
-- **Mixtral 8x7B** - Powerful mixture of experts model
-- **LLaMA 3/4** - Meta's latest large language models (8B/70B variants)
-- **Qwen 2.5** - Alibaba's instruction-tuned models
-- **Gemma 7B/9B** - Google's instruction-tuned models
-- **Llama Guard** - Content moderation models
+- Groq: Mixtral, LLaMA 3/4, Qwen, Gemma, etc.
+- Gemini: Gemini 2.0 Flash, Gemini 1.5 Flash/Pro, and more
 
-Models are dynamically loaded from the Groq API.
+Models are dynamically loaded from the selected provider API.
 
 ## Configuration ⚙️
 
@@ -206,6 +207,8 @@ Models are dynamically loaded from the Groq API.
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
 | `GROQ_API_KEY` | ✅ Yes | - | Your Groq API key |
+| `GEMINI_API_KEY` | ❌ No | - | Google Gemini API key (preferred) |
+| `GOOGLE_API_KEY` | ❌ No | - | Alternative env var for Gemini |
 | `PORT` | ❌ No | `5000` | Application port |
 | `LOG_LEVEL` | ❌ No | `info` | Logging level (debug/info/warning/error) |
 

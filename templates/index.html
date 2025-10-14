@@ -13,8 +13,8 @@
             <!-- Header -->
             <div class="header">
                 <div class="header-title">
-                    <h2>🤖 Groq AI Chat</h2>
-                    <span class="header-subtitle">(Memory Only - No History Saved)</span>
+                    <h2>🤖 AI Chat</h2>
+                    <span class="header-subtitle">(In-memory session — no persistence)</span>
                 </div>
                 
                 <button class="new-chat-btn" id="newChatBtn" title="Clear chat and start fresh">
@@ -25,6 +25,14 @@
                     New Chat
                 </button>
                 
+                <div class="model-selector">
+                    <label for="providerSelect">Provider:</label>
+                    <select id="providerSelect" class="model-select">
+                        <option value="groq">Groq</option>
+                        <option value="gemini">Gemini</option>
+                    </select>
+                </div>
+
                 <div class="model-selector">
                     <label for="modelSelect">Model:</label>
                     <select id="modelSelect" class="model-select">
