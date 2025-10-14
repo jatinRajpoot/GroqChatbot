@@ -28,9 +28,18 @@ except Exception as e:
 
 # Initialize OpenRouter client if available
 try:
-    openrouter_client = OpenRouterClient(api_key=os.getenv('OPENROUTER_API_KEY'))
+    openrouter_api_key = os.getenv('OPENROUTER_API_KEY')
+    if openrouter_api_key:
+        print(f"[INFO] Initializing OpenRouter client...")
+        openrouter_client = OpenRouterClient(api_key=openrouter_api_key)
+        print(f"[INFO] OpenRouter client initialized successfully")
+    else:
+        print(f"[WARNING] OPENROUTER_API_KEY not found in environment")
+        openrouter_client = None
 except Exception as e:
-    print(f"Warning: OpenRouter client initialization failed: {e}")
+    print(f"[ERROR] OpenRouter client initialization failed: {e}")
+    import traceback
+    traceback.print_exc()
     openrouter_client = None
 
 # In-memory storage for chat history (session only)
@@ -47,17 +56,23 @@ def get_models():
     """Get list of available models from selected provider."""
     try:
         provider = request.args.get('provider', 'groq').lower()
+        print(f"[DEBUG] /api/models called with provider: {provider}")
 
         if provider == 'gemini':
             if not gemini_client:
+                print(f"[DEBUG] Gemini client not configured")
                 return jsonify({'success': False, 'error': 'Gemini client not configured. Set GEMINI_API_KEY.'}), 400
             models = gemini_client.list_models()
+            print(f"[DEBUG] Gemini models loaded: {len(models)}")
             return jsonify({'success': True, 'models': models})
 
         if provider == 'openrouter':
             if not openrouter_client:
+                print(f"[DEBUG] OpenRouter client not configured")
                 return jsonify({'success': False, 'error': 'OpenRouter client not configured. Set OPENROUTER_API_KEY.'}), 400
+            print(f"[DEBUG] Fetching OpenRouter models...")
             models = openrouter_client.list_models()
+            print(f"[DEBUG] OpenRouter models loaded: {len(models)}")
             return jsonify({'success': True, 'models': models})
 
         if provider == 'all':

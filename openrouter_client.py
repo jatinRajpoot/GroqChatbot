@@ -102,7 +102,36 @@ class OpenRouterClient:
                 else:
                     raise Exception("No response from OpenRouter API")
                     
+        except httpx.HTTPStatusError as e:
+            error_message = self._parse_error_message(e.response)
+            status = e.response.status_code if e.response is not None else 'Unknown'
+            if status == 404 and error_message and 'No allowed providers' in error_message:
+                raise Exception(
+                    "OpenRouter returned 404: No allowed providers are available for the selected model. "
+                    "Update your API key's Allowed Providers list or choose another model."
+                )
+            raise Exception(f"OpenRouter API error ({status}): {error_message or str(e)}")
         except httpx.HTTPError as e:
             raise Exception(f"Network error getting OpenRouter chat response: {str(e)}")
         except Exception as e:
             raise Exception(f"Error getting OpenRouter chat response: {str(e)}")
+
+    @staticmethod
+    def _parse_error_message(response: httpx.Response | None) -> str:
+        """Return a readable error message from an HTTP response"""
+        if response is None:
+            return ""
+        try:
+            payload = response.json()
+        except ValueError:
+            return response.text
+        if isinstance(payload, dict):
+            error = payload.get('error')
+            if isinstance(error, dict):
+                message = error.get('message')
+                if message:
+                    return message
+            message = payload.get('message')
+            if isinstance(message, str):
+                return message
+        return response.text
