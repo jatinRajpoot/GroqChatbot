@@ -13,10 +13,6 @@ const chatContainer = document.getElementById('chatContainer');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const modelSelect = document.getElementById('modelSelect');
 const newChatBtn = document.getElementById('newChatBtn');
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-const sidebarToggle = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
 const ttsSelect = document.getElementById('ttsSelect');
 
 // Initialize app
@@ -66,13 +62,6 @@ function setupEventListeners() {
     });
     
     newChatBtn.addEventListener('click', startNewChat);
-    clearHistoryBtn.addEventListener('click', clearHistory);
-    sidebarToggle.addEventListener('click', toggleSidebar);
-    
-    // Close sidebar when overlay is clicked (mobile)
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', closeSidebar);
-    }
     
     // Example prompts
     document.querySelectorAll('.example-prompt').forEach(btn => {
@@ -243,85 +232,7 @@ async function loadChatHistory() {
     }
 }
 
-// Load all sessions for sidebar
-async function loadSessions() {
-    try {
-        const response = await fetch('/api/sessions');
-        const data = await response.json();
-        
-        if (data.success && data.sessions) {
-            renderSessions(data.sessions, data.current_session);
-        }
-    } catch (error) {
-        console.error('Error loading sessions:', error);
-    }
-}
-
-// Render sessions in sidebar
-function renderSessions(sessions, currentSessionId) {
-    const chatSessions = document.getElementById('chatSessions');
-    if (!chatSessions) return;
-    
-    chatSessions.innerHTML = '';
-    
-    sessions.forEach(session => {
-        const sessionDiv = document.createElement('div');
-        sessionDiv.className = 'chat-session';
-        sessionDiv.dataset.sessionId = session.session_id;
-        
-        // Mark active session
-        if (session.session_id === currentSessionId) {
-            sessionDiv.classList.add('active');
-        }
-        
-        // Truncate title if too long
-        const title = session.title || `Chat ${session.session_id.substring(0, 8)}`;
-        const displayTitle = title.length > 30 ? title.substring(0, 27) + '...' : title;
-        
-        // Create session content
-        const sessionContent = document.createElement('div');
-        sessionContent.style.display = 'flex';
-        sessionContent.style.justifyContent = 'space-between';
-        sessionContent.style.alignItems = 'center';
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = displayTitle;
-        titleSpan.title = title; // Show full title on hover
-        
-        const countSpan = document.createElement('span');
-        countSpan.style.fontSize = '11px';
-        countSpan.style.opacity = '0.6';
-        countSpan.textContent = `${session.message_count || 0} msgs`;
-        
-        sessionContent.appendChild(titleSpan);
-        sessionContent.appendChild(countSpan);
-        sessionDiv.appendChild(sessionContent);
-        
-        // Add click handler to switch sessions
-        sessionDiv.addEventListener('click', () => switchSession(session.session_id));
-        
-        chatSessions.appendChild(sessionDiv);
-    });
-}
-
-// Switch to a different session
-async function switchSession(sessionId) {
-    try {
-        const response = await fetch('/api/switch-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId })
-        });
-        
-        if (response.ok) {
-            // Reload the page to switch session
-            window.location.reload();
-        }
-    } catch (error) {
-        console.error('Error switching session:', error);
-        showError('Failed to switch session');
-    }
-}
+// (Removed) Sessions UI and switching logic - not used in minimalist mode
 
 // Send message
 async function sendMessage() {
@@ -597,45 +508,9 @@ async function startNewChat() {
     }
 }
 
-// Clear history
-async function clearHistory() {
-    if (confirm('Clear chat history? This cannot be undone.')) {
-        try {
-            const response = await fetch('/api/clear', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                chatHistory = [];
-                showWelcomeScreen();
-            }
-        } catch (error) {
-            console.error('Error clearing history:', error);
-            showError('Failed to clear history');
-        }
-    }
-}
+// (Removed) Clear history via UI - not exposed in minimalist mode
 
-// Toggle sidebar
-function toggleSidebar() {
-    sidebar.classList.toggle('open');
-    if (sidebarOverlay) {
-        sidebarOverlay.classList.toggle('active');
-    }
-}
-
-// Close sidebar (for mobile)
-function closeSidebar() {
-    sidebar.classList.remove('open');
-    if (sidebarOverlay) {
-        sidebarOverlay.classList.remove('active');
-    }
-}
+// (Removed) Sidebar toggle/overlay - no sidebar in minimalist mode
 
 // Highlight model selector on first visit
 function highlightModelSelector() {
