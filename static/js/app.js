@@ -1,5 +1,6 @@
 // Global state
 let currentModel = 'mixtral-8x7b-32768';
+let currentProvider = 'groq';
 let currentTTSMode = 'playai-tts|Fritz-PlayAI'; // Format: "model|voice" or "disabled"
 let isLoading = false;
 let chatHistory = [];
@@ -12,11 +13,18 @@ const messagesContainer = document.getElementById('messages');
 const chatContainer = document.getElementById('chatContainer');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const modelSelect = document.getElementById('modelSelect');
+const providerSelect = document.getElementById('providerSelect');
 const newChatBtn = document.getElementById('newChatBtn');
 const ttsSelect = document.getElementById('ttsSelect');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore preferred provider
+    const savedProvider = localStorage.getItem('provider');
+    if (savedProvider) {
+        currentProvider = savedProvider;
+        if (providerSelect) providerSelect.value = savedProvider;
+    }
     loadModels();
     loadChatHistory();
     // Sessions removed - no database
@@ -44,6 +52,13 @@ function setupEventListeners() {
     
     modelSelect.addEventListener('change', (e) => {
         currentModel = e.target.value;
+        localStorage.setItem('preferred_model_' + currentProvider, currentModel);
+    });
+
+    providerSelect.addEventListener('change', async (e) => {
+        currentProvider = e.target.value;
+        localStorage.setItem('provider', currentProvider);
+        await loadModels();
     });
     
     ttsSelect.addEventListener('change', (e) => {
@@ -191,7 +206,7 @@ function loadTTSPreference() {
 // Load available models
 async function loadModels() {
     try {
-        const response = await fetch('/api/models');
+        const response = await fetch(`/api/models?provider=${encodeURIComponent(currentProvider)}`);
         const data = await response.json();
         
         if (data.success) {
@@ -200,13 +215,15 @@ async function loadModels() {
             data.models.forEach(model => {
                 const option = document.createElement('option');
                 option.value = model.id;
-                option.textContent = model.id;
+                option.textContent = model.name || model.id;
                 modelSelect.appendChild(option);
             });
             
-            // Set default model
+            // Set default/preferred model
             if (data.models.length > 0) {
-                currentModel = data.models[0].id;
+                const preferred = localStorage.getItem('preferred_model_' + currentProvider);
+                const found = data.models.find(m => m.id === preferred);
+                currentModel = (found ? found.id : data.models[0].id);
                 modelSelect.value = currentModel;
             }
         }
@@ -264,7 +281,8 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 message: message,
-                model: currentModel
+                model: currentModel,
+                provider: currentProvider
             })
         });
         
@@ -483,7 +501,7 @@ function showWelcomeScreen() {
 
 // Start new chat
 async function startNewChat() {
-    if (confirm('Start a new chat? Current conversation will be saved.')) {
+    if (confirm('Start a new chat? Current conversation will be cleared.')) {
         try {
             const response = await fetch('/api/new-chat', {
                 method: 'POST',
