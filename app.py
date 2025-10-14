@@ -4,6 +4,7 @@ from datetime import datetime
 from dotenv import load_dotenv
 from groq_client import GroqClient
 from gemini_client import GeminiClient
+from openrouter_client import OpenRouterClient
 import secrets
 
 load_dotenv()
@@ -24,6 +25,13 @@ try:
 except Exception as e:
     print(f"Warning: Gemini client initialization failed: {e}")
     gemini_client = None
+
+# Initialize OpenRouter client if available
+try:
+    openrouter_client = OpenRouterClient(api_key=os.getenv('OPENROUTER_API_KEY'))
+except Exception as e:
+    print(f"Warning: OpenRouter client initialization failed: {e}")
+    openrouter_client = None
 
 # In-memory storage for chat history (session only)
 chat_history = []
@@ -46,6 +54,12 @@ def get_models():
             models = gemini_client.list_models()
             return jsonify({'success': True, 'models': models})
 
+        if provider == 'openrouter':
+            if not openrouter_client:
+                return jsonify({'success': False, 'error': 'OpenRouter client not configured. Set OPENROUTER_API_KEY.'}), 400
+            models = openrouter_client.list_models()
+            return jsonify({'success': True, 'models': models})
+
         if provider == 'all':
             models = []
             try:
@@ -62,6 +76,15 @@ def get_models():
                     for m in gem_models:
                         m_copy = dict(m)
                         m_copy['provider'] = 'gemini'
+                        models.append(m_copy)
+            except Exception:
+                pass
+            try:
+                if openrouter_client:
+                    or_models = openrouter_client.list_models()
+                    for m in or_models:
+                        m_copy = dict(m)
+                        m_copy['provider'] = 'openrouter'
                         models.append(m_copy)
             except Exception:
                 pass
@@ -109,6 +132,10 @@ def chat():
             if not gemini_client:
                 return jsonify({'success': False, 'error': 'Gemini client not configured. Set GEMINI_API_KEY.'}), 400
             assistant_message = gemini_client.chat(messages, model=selected_model)
+        elif provider == 'openrouter':
+            if not openrouter_client:
+                return jsonify({'success': False, 'error': 'OpenRouter client not configured. Set OPENROUTER_API_KEY.'}), 400
+            assistant_message = openrouter_client.chat(messages, model=selected_model)
         else:
             if not groq_client:
                 return jsonify({'success': False, 'error': 'Groq client not configured. Set GROQ_API_KEY.'}), 400
@@ -204,6 +231,9 @@ def health_check():
         elif gemini_client is not None:
             _ = gemini_client.list_models()
             provider = 'gemini'
+        elif openrouter_client is not None:
+            _ = openrouter_client.list_models()
+            provider = 'openrouter'
         else:
             return jsonify({'status': 'unhealthy', 'error': 'No AI provider configured'}), 503
 
