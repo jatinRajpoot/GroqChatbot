@@ -206,11 +206,16 @@ function loadTTSPreference() {
 // Load available models
 async function loadModels() {
     try {
+        console.log(`Loading models for provider: ${currentProvider}`);
         const response = await fetch(`/api/models?provider=${encodeURIComponent(currentProvider)}`);
         const data = await response.json();
         
+        console.log(`Response from /api/models:`, data);
+        
         if (data.success) {
             modelSelect.innerHTML = '';
+            
+            console.log(`Found ${data.models.length} models`);
             
             data.models.forEach(model => {
                 const option = document.createElement('option');
@@ -225,7 +230,13 @@ async function loadModels() {
                 const found = data.models.find(m => m.id === preferred);
                 currentModel = (found ? found.id : data.models[0].id);
                 modelSelect.value = currentModel;
+                console.log(`Selected model: ${currentModel}`);
+            } else {
+                console.warn('No models found for provider:', currentProvider);
             }
+        } else {
+            console.error('Failed to load models:', data.error);
+            showError(data.error || 'Failed to load models. Using default model.');
         }
     } catch (error) {
         console.error('Error loading models:', error);

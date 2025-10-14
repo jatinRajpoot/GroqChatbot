@@ -1,6 +1,6 @@
 # Groq AI Chatbot 🤖
 
-A modern, ChatGPT-like web application built with Flask and powered by Groq's API and Google Gemini. Features a sleek dark interface, text-to-speech support, and optimized for production deployment.
+A modern, ChatGPT-like web application built with Flask and powered by Groq's API, Google Gemini, and OpenRouter. Features a sleek dark interface, text-to-speech support, and optimized for production deployment.
 
 ![Groq Chatbot](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)
@@ -10,12 +10,10 @@ A modern, ChatGPT-like web application built with Flask and powered by Groq's AP
 ## Features ✨
 
 - 🎨 **Modern UI** - ChatGPT-inspired dark theme interface
-- 🤖 **20+ AI Models** - Access to various open-source models via Groq API:
-  - Mixtral 8x7B
-  - LLaMA 3/4 (8B/70B)
-  - Qwen 2.5
-  - Gemma 7B/9B
-  - And more!
+- 🤖 **Multiple AI Providers** - Access to various AI models:
+  - **Groq**: Mixtral 8x7B, LLaMA 3/4 (8B/70B), Qwen 2.5, Gemma, and more
+  - **Google Gemini**: Gemini 2.0 Flash, Gemini 1.5 Flash/Pro
+  - **OpenRouter**: Free models including Llama 3.2 3B, Gemma 2 9B, Mistral 7B
 - 🔊 **Text-to-Speech** - 23 voices with PlayAI integration (English & Arabic)
 - 💬 **In-Memory Chat** - Session-based conversation history (no database)
 - 📝 **Rich Markdown Formatting** - Full support for:
@@ -47,8 +45,10 @@ The application features:
 ## Prerequisites 📋
 
 - Python 3.11 or higher
-- Groq API key (free tier available)
-- Optional: Google Gemini API key (set `GEMINI_API_KEY` or `GOOGLE_API_KEY`)
+- At least one API key from:
+  - **Groq API** (free tier available) - [Get key](https://console.groq.com/keys)
+  - **Google Gemini API** (optional) - [Get key](https://aistudio.google.com/app/apikey)
+  - **OpenRouter API** (optional, free models available) - [Get key](https://openrouter.ai/keys)
 - Docker (optional, for containerized deployment)
 
 ## Quick Start 🚀
@@ -102,10 +102,16 @@ pip install -r requirements.txt
 
 Create a `.env` file:
 ```bash
+# At least one API key is required
 GROQ_API_KEY=your_actual_groq_api_key_here
-# Either variable works for Gemini
+
+# Optional: Add Gemini support (use either variable)
 GEMINI_API_KEY=your_google_gemini_api_key_here
 # or GOOGLE_API_KEY=your_google_gemini_api_key_here
+
+# Optional: Add OpenRouter support (free models available)
+OPENROUTER_API_KEY=your_openrouter_api_key_here
+
 PORT=5000
 ```
 
@@ -159,6 +165,8 @@ To use the TTS feature:
 AIoutputs/
 ├── app.py                 # Main Flask application
 ├── groq_client.py         # Groq API integration with TTS
+├── gemini_client.py       # Google Gemini API integration
+├── openrouter_client.py   # OpenRouter API integration (free models)
 ├── gunicorn_config.py     # Production server configuration
 ├── requirements.txt       # Python dependencies
 ├── Dockerfile             # Docker image configuration
@@ -185,20 +193,33 @@ AIoutputs/
 
 - `GET /` - Main chat interface
 - `GET /health` - Health check endpoint (for Docker/monitoring)
-- `GET /api/models?provider=groq|gemini|all` - List available AI models
-- `POST /api/chat` - Send chat message
+- `GET /api/models?provider=groq|gemini|openrouter|all` - List available AI models
+- `POST /api/chat` - Send chat message (specify provider in request body)
 - `POST /api/tts` - Text-to-speech conversion
 - `GET /api/history` - Get current session chat history
 - `POST /api/clear` - Clear current session messages
 
 ## Available Models 🎭
 
-The application supports models from Groq and Google Gemini:
+The application supports models from multiple providers:
 
-- Groq: Mixtral, LLaMA 3/4, Qwen, Gemma, etc.
-- Gemini: Gemini 2.0 Flash, Gemini 1.5 Flash/Pro, and more
+### Groq Models
+- Mixtral 8x7B - Powerful mixture of experts model
+- LLaMA 3/4 (8B/70B) - Meta's latest large language models
+- Qwen 2.5 - Alibaba's instruction-tuned models
+- Gemma 7B/9B - Google's instruction-tuned models
 
-Models are dynamically loaded from the selected provider API.
+### Google Gemini Models
+- Gemini 2.0 Flash (experimental)
+- Gemini 1.5 Flash
+- Gemini 1.5 Pro
+
+### OpenRouter Free Models
+- Llama 3.2 3B Instruct (free)
+- Gemma 2 9B (free)
+- Mistral 7B Instruct (free)
+
+Models are dynamically loaded based on configured API keys.
 
 ## Configuration ⚙️
 
@@ -206,11 +227,14 @@ Models are dynamically loaded from the selected provider API.
 
 | Variable | Required | Default | Description |
 |----------|----------|---------|-------------|
-| `GROQ_API_KEY` | ✅ Yes | - | Your Groq API key |
-| `GEMINI_API_KEY` | ❌ No | - | Google Gemini API key (preferred) |
-| `GOOGLE_API_KEY` | ❌ No | - | Alternative env var for Gemini |
+| `GROQ_API_KEY` | ⚠️ At least one | - | Your Groq API key |
+| `GEMINI_API_KEY` | ⚠️ At least one | - | Google Gemini API key (preferred) |
+| `GOOGLE_API_KEY` | ⚠️ At least one | - | Alternative env var for Gemini |
+| `OPENROUTER_API_KEY` | ❌ No | - | OpenRouter API key (free models available) |
 | `PORT` | ❌ No | `5000` | Application port |
 | `LOG_LEVEL` | ❌ No | `info` | Logging level (debug/info/warning/error) |
+
+**Note**: At least one API key (Groq, Gemini, or OpenRouter) is required for the application to work.
 
 ### Customizing the Application
 
@@ -263,8 +287,11 @@ pip install groq
 ```
 
 **API Key Error**
-- Ensure `.env` file exists with valid `GROQ_API_KEY`
-- Check that API key is active in Groq Console
+- Ensure `.env` file exists with at least one valid API key (`GROQ_API_KEY`, `GEMINI_API_KEY`, or `OPENROUTER_API_KEY`)
+- Check that API key is active in respective console
+- Groq: https://console.groq.com/keys
+- Gemini: https://aistudio.google.com/app/apikey
+- OpenRouter: https://openrouter.ai/keys
 
 **Port Already in Use**
 - Change `PORT` in `.env` file
@@ -272,8 +299,14 @@ pip install groq
 
 **Models Not Loading**
 - Check internet connection
-- Verify API key is valid
-- Check Groq API status at console.groq.com
+- Verify at least one API key is valid
+- Check provider API status (Groq, Gemini, or OpenRouter)
+- For OpenRouter, ensure you're using the free tier models
+
+**OpenRouter Specific Issues**
+- Free models may have rate limits
+- Ensure model ID includes `:free` suffix (e.g., `meta-llama/llama-3.2-3b-instruct:free`)
+- Check OpenRouter dashboard for API status
 
 **TTS Not Working**
 - Accept terms at https://console.groq.com/playground?model=playai-tts
