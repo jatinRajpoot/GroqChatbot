@@ -25,7 +25,8 @@
                     New Chat
                 </button>
                 
-                <div class="model-selector">
+                <!-- Desktop: Show selectors inline -->
+                <div class="model-selector desktop-only">
                     <label for="providerSelect">Provider:</label>
                     <select id="providerSelect" class="model-select">
                         <option value="groq">Groq</option>
@@ -34,14 +35,14 @@
                     </select>
                 </div>
 
-                <div class="model-selector">
+                <div class="model-selector desktop-only">
                     <label for="modelSelect">Model:</label>
                     <select id="modelSelect" class="model-select">
                         <option value="">Loading models...</option>
                     </select>
                 </div>
                 
-                <div class="tts-selector">
+                <div class="tts-selector desktop-only">
                     <label for="ttsSelect">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -79,7 +80,89 @@
                         </optgroup>
                     </select>
                 </div>
+
+                <!-- Mobile: Hamburger menu button -->
+                <button class="hamburger-btn mobile-only" id="hamburgerBtn" title="Settings" aria-label="Open settings menu">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
             </div>
+
+            <!-- Mobile Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <div class="settings-header">
+                    <h3>Settings</h3>
+                    <button class="close-settings-btn" id="closeSettingsBtn" aria-label="Close settings">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+                <div class="settings-content">
+                    <div class="setting-group">
+                        <label for="mobileProviderSelect">Provider</label>
+                        <select id="mobileProviderSelect" class="setting-select">
+                            <option value="groq">Groq</option>
+                            <option value="gemini">Gemini</option>
+                            <option value="openrouter">OpenRouter (Free)</option>
+                        </select>
+                    </div>
+
+                    <div class="setting-group">
+                        <label for="mobileModelSelect">Model</label>
+                        <select id="mobileModelSelect" class="setting-select">
+                            <option value="">Loading models...</option>
+                        </select>
+                    </div>
+                    
+                    <div class="setting-group">
+                        <label for="mobileTTSSelect">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline; vertical-align: middle; margin-right: 6px;">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                            Text-to-Speech
+                        </label>
+                        <select id="mobileTTSSelect" class="setting-select">
+                            <option value="disabled">Disabled</option>
+                            <optgroup label="English Voices (PlayAI)">
+                                <option value="playai-tts|Arista-PlayAI">Arista (Female)</option>
+                                <option value="playai-tts|Atlas-PlayAI">Atlas (Male)</option>
+                                <option value="playai-tts|Basil-PlayAI">Basil (Male)</option>
+                                <option value="playai-tts|Briggs-PlayAI">Briggs (Male)</option>
+                                <option value="playai-tts|Calum-PlayAI">Calum (Male)</option>
+                                <option value="playai-tts|Celeste-PlayAI">Celeste (Female)</option>
+                                <option value="playai-tts|Cheyenne-PlayAI">Cheyenne (Female)</option>
+                                <option value="playai-tts|Chip-PlayAI">Chip (Male)</option>
+                                <option value="playai-tts|Cillian-PlayAI">Cillian (Male)</option>
+                                <option value="playai-tts|Deedee-PlayAI">Deedee (Female)</option>
+                                <option value="playai-tts|Fritz-PlayAI" selected>Fritz (Male)</option>
+                                <option value="playai-tts|Gail-PlayAI">Gail (Female)</option>
+                                <option value="playai-tts|Indigo-PlayAI">Indigo (Neutral)</option>
+                                <option value="playai-tts|Mamaw-PlayAI">Mamaw (Female)</option>
+                                <option value="playai-tts|Mason-PlayAI">Mason (Male)</option>
+                                <option value="playai-tts|Mikail-PlayAI">Mikail (Male)</option>
+                                <option value="playai-tts|Mitch-PlayAI">Mitch (Male)</option>
+                                <option value="playai-tts|Quinn-PlayAI">Quinn (Female)</option>
+                                <option value="playai-tts|Thunder-PlayAI">Thunder (Male)</option>
+                            </optgroup>
+                            <optgroup label="Arabic Voices (PlayAI)">
+                                <option value="playai-tts-arabic|Ahmad-PlayAI">Ahmad (Male)</option>
+                                <option value="playai-tts-arabic|Amira-PlayAI">Amira (Female)</option>
+                                <option value="playai-tts-arabic|Khalid-PlayAI">Khalid (Male)</option>
+                                <option value="playai-tts-arabic|Nasser-PlayAI">Nasser (Male)</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings overlay for mobile -->
+            <div class="settings-overlay" id="settingsOverlay"></div>
 
             <!-- Chat Area -->
             <div class="chat-container" id="chatContainer">

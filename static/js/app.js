@@ -17,6 +17,15 @@ const providerSelect = document.getElementById('providerSelect');
 const newChatBtn = document.getElementById('newChatBtn');
 const ttsSelect = document.getElementById('ttsSelect');
 
+// Mobile settings elements
+const hamburgerBtn = document.getElementById('hamburgerBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const closeSettingsBtn = document.getElementById('closeSettingsBtn');
+const mobileProviderSelect = document.getElementById('mobileProviderSelect');
+const mobileModelSelect = document.getElementById('mobileModelSelect');
+const mobileTTSSelect = document.getElementById('mobileTTSSelect');
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
     // Restore preferred provider
@@ -24,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (savedProvider) {
         currentProvider = savedProvider;
         if (providerSelect) providerSelect.value = savedProvider;
+        if (mobileProviderSelect) mobileProviderSelect.value = savedProvider;
     }
     loadModels();
     loadChatHistory();
@@ -50,31 +60,83 @@ function setupEventListeners() {
         sendBtn.disabled = messageInput.value.trim() === '';
     });
     
+    // Desktop selectors
     modelSelect.addEventListener('change', (e) => {
         currentModel = e.target.value;
         localStorage.setItem('preferred_model_' + currentProvider, currentModel);
+        // Sync with mobile
+        if (mobileModelSelect) mobileModelSelect.value = currentModel;
     });
 
     providerSelect.addEventListener('change', async (e) => {
         currentProvider = e.target.value;
         localStorage.setItem('provider', currentProvider);
+        // Sync with mobile
+        if (mobileProviderSelect) mobileProviderSelect.value = currentProvider;
         await loadModels();
     });
     
     ttsSelect.addEventListener('change', (e) => {
         currentTTSMode = e.target.value;
-        // Save preference to localStorage
         localStorage.setItem('tts_preference', currentTTSMode);
+        // Sync with mobile
+        if (mobileTTSSelect) mobileTTSSelect.value = currentTTSMode;
         // Stop any playing audio
         if (currentAudio) {
             currentAudio.pause();
             currentAudio = null;
-            // Remove playing class from all buttons
             document.querySelectorAll('.speaker-btn.playing').forEach(btn => {
                 btn.classList.remove('playing');
             });
         }
     });
+
+    // Mobile selectors (sync back to desktop)
+    if (mobileProviderSelect) {
+        mobileProviderSelect.addEventListener('change', async (e) => {
+            currentProvider = e.target.value;
+            localStorage.setItem('provider', currentProvider);
+            if (providerSelect) providerSelect.value = currentProvider;
+            await loadModels();
+        });
+    }
+
+    if (mobileModelSelect) {
+        mobileModelSelect.addEventListener('change', (e) => {
+            currentModel = e.target.value;
+            localStorage.setItem('preferred_model_' + currentProvider, currentModel);
+            if (modelSelect) modelSelect.value = currentModel;
+        });
+    }
+
+    if (mobileTTSSelect) {
+        mobileTTSSelect.addEventListener('change', (e) => {
+            currentTTSMode = e.target.value;
+            localStorage.setItem('tts_preference', currentTTSMode);
+            if (ttsSelect) ttsSelect.value = currentTTSMode;
+            // Stop any playing audio
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio = null;
+                document.querySelectorAll('.speaker-btn.playing').forEach(btn => {
+                    btn.classList.remove('playing');
+                });
+            }
+        });
+    }
+
+    // Hamburger menu
+    if (hamburgerBtn) {
+        hamburgerBtn.addEventListener('click', openSettings);
+    }
+
+    if (closeSettingsBtn) {
+        closeSettingsBtn.addEventListener('click', closeSettings);
+    }
+
+    if (settingsOverlay) {
+        settingsOverlay.addEventListener('click', closeSettings);
+    }
     
     newChatBtn.addEventListener('click', startNewChat);
     
@@ -95,6 +157,22 @@ function setupEventListeners() {
             }
         });
     });
+}
+
+// Open mobile settings panel
+function openSettings() {
+    if (settingsPanel) settingsPanel.classList.add('open');
+    if (settingsOverlay) settingsOverlay.classList.add('visible');
+    // Prevent body scroll when panel is open
+    document.body.style.overflow = 'hidden';
+}
+
+// Close mobile settings panel
+function closeSettings() {
+    if (settingsPanel) settingsPanel.classList.remove('open');
+    if (settingsOverlay) settingsOverlay.classList.remove('visible');
+    // Restore body scroll
+    document.body.style.overflow = '';
 }
 
 // Text-to-Speech function using Groq API
@@ -200,6 +278,7 @@ function loadTTSPreference() {
     if (savedPreference) {
         currentTTSMode = savedPreference;
         ttsSelect.value = savedPreference;
+        if (mobileTTSSelect) mobileTTSSelect.value = savedPreference;
     }
 }
 
@@ -213,15 +292,26 @@ async function loadModels() {
         console.log(`Response from /api/models:`, data);
         
         if (data.success) {
+            // Clear both desktop and mobile selects
             modelSelect.innerHTML = '';
+            if (mobileModelSelect) mobileModelSelect.innerHTML = '';
             
             console.log(`Found ${data.models.length} models`);
             
             data.models.forEach(model => {
+                // Desktop select
                 const option = document.createElement('option');
                 option.value = model.id;
                 option.textContent = model.name || model.id;
                 modelSelect.appendChild(option);
+
+                // Mobile select
+                if (mobileModelSelect) {
+                    const mobileOption = document.createElement('option');
+                    mobileOption.value = model.id;
+                    mobileOption.textContent = model.name || model.id;
+                    mobileModelSelect.appendChild(mobileOption);
+                }
             });
             
             // Set default/preferred model
@@ -230,6 +320,7 @@ async function loadModels() {
                 const found = data.models.find(m => m.id === preferred);
                 currentModel = (found ? found.id : data.models[0].id);
                 modelSelect.value = currentModel;
+                if (mobileModelSelect) mobileModelSelect.value = currentModel;
                 console.log(`Selected model: ${currentModel}`);
             } else {
                 console.warn('No models found for provider:', currentProvider);

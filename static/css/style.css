@@ -780,6 +780,157 @@ button:active, .example-prompt:active {
     font-size: 14px;
 }
 
+/* Mobile/Desktop visibility helpers */
+.mobile-only {
+    display: none !important;
+}
+
+.desktop-only {
+    display: flex !important;
+}
+
+/* Hamburger button */
+.hamburger-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover {
+    background: var(--bg-secondary);
+}
+
+.hamburger-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* Settings panel (mobile) */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 85%;
+    max-width: 360px;
+    height: 100vh;
+    background: var(--bg-primary);
+    border-left: 1px solid var(--border-color);
+    z-index: 1000;
+    transition: right 0.3s ease-in-out;
+    overflow-y: auto;
+}
+
+.settings-panel.open {
+    right: 0;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border-color);
+    background: var(--bg-primary);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.settings-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.close-settings-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.close-settings-btn:hover {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+}
+
+.close-settings-btn svg {
+    width: 24px;
+    height: 24px;
+}
+
+.settings-content {
+    padding: 20px;
+}
+
+.setting-group {
+    margin-bottom: 20px;
+}
+
+.setting-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.setting-select {
+    width: 100%;
+    padding: 12px 14px;
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.setting-select:hover {
+    background: var(--bg-tertiary);
+}
+
+.setting-select:focus {
+    outline: none;
+    border-color: var(--text-primary);
+    background: var(--bg-primary);
+}
+
+/* Settings overlay */
+.settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    z-index: 999;
+}
+
+.settings-overlay.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
     .messages {
@@ -811,48 +962,53 @@ button:active, .example-prompt:active {
 }
 
 @media (max-width: 768px) {
+    /* Show/hide desktop vs mobile elements */
+    .mobile-only {
+        display: inline-flex !important;
+    }
+
+    .desktop-only {
+        display: none !important;
+    }
+
     .header {
         padding: 12px 16px;
         gap: 12px;
-        flex-direction: column;
-        align-items: stretch;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
     }
 
     .header-title {
         flex-direction: column;
         align-items: flex-start;
-        gap: 4px;
+        gap: 2px;
+        flex: 1;
     }
 
     .header-title h2 {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
     }
 
     .header-title span {
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         margin-left: 0 !important;
     }
 
     .new-chat-btn {
-        width: 100%;
-        justify-content: center;
-        padding: 12px 16px;
-    }
-    
-    .model-selector, .tts-selector {
-        width: 100%;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 8px;
-    }
-
-    .model-selector label,
-    .tts-selector label {
+        padding: 8px 10px;
         font-size: 13px;
+        gap: 4px;
     }
 
-    .model-select, .tts-select {
-        width: 100%;
+    .new-chat-btn svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    /* Remove the stacked model selectors from header on mobile */
+    .model-selector, .tts-selector {
+        display: none;
     }
     
     .welcome-content {
@@ -987,35 +1143,38 @@ button:active, .example-prompt:active {
 @media (max-width: 480px) {
     .header {
         padding: 10px 12px;
+        gap: 8px;
     }
     
     .header-title h2 {
-        font-size: 1.1rem;
+        font-size: 1.05rem;
     }
     
     .header-title span {
-        font-size: 0.7rem;
+        font-size: 0.65rem;
     }
     
     .new-chat-btn {
-        padding: 10px 14px;
-        font-size: 13px;
-    }
-    
-    .new-chat-btn svg {
-        width: 16px;
-        height: 16px;
-    }
-    
-    .model-selector label,
-    .tts-selector label {
+        padding: 7px 9px;
         font-size: 12px;
     }
     
-    .model-select,
-    .tts-select {
-        font-size: 13px;
-        padding: 8px 10px;
+    .new-chat-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .hamburger-btn {
+        padding: 6px;
+    }
+
+    .hamburger-btn svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    .settings-panel {
+        width: 90%;
     }
     
     .welcome-content {
