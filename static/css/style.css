@@ -1,16 +1,17 @@
 :root {
-    --bg-primary: #0f0f0f;
-    --bg-secondary: #1a1a1a;
-    --bg-tertiary: #2a2a2a;
-    --bg-hover: #2f2f2f;
-    --text-primary: #ececec;
-    --text-secondary: #b4b4b4;
-    --border-color: #3a3a3a;
-    --accent-color: #10a37f;
-    --accent-hover: #0e8c6f;
+    /* Pure black and white minimalist theme */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f7f7f8;
+    --bg-tertiary: #ececf1;
+    --bg-hover: #e5e5e5;
+    --text-primary: #000000;
+    --text-secondary: #6e6e80;
+    --border-color: #d9d9e3;
+    --accent-color: #000000;
+    --accent-hover: #2d2d2d;
     --error-color: #ef4444;
-    --user-bg: #2f2f2f;
-    --assistant-bg: #1a1a1a;
+    --user-bg: #f7f7f8;
+    --assistant-bg: #ffffff;
 }
 
 * {
@@ -31,12 +32,12 @@ body {
 }
 
 /* Touch-friendly elements */
-button, .chat-session, .example-prompt {
+button, .example-prompt {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
 }
 
-button:active, .chat-session:active, .example-prompt:active {
+button:active, .example-prompt:active {
     opacity: 0.8;
 }
 
@@ -57,12 +58,15 @@ button:active, .chat-session:active, .example-prompt:active {
 
 /* Header */
 .header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border-color);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    padding: 12px 20px;
     display: flex;
     align-items: center;
-    gap: 20px;
-    background-color: var(--bg-primary);
+    gap: 16px;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
     flex-wrap: wrap;
 }
 
@@ -72,24 +76,35 @@ button:active, .chat-session:active, .example-prompt:active {
     flex-grow: 1;
 }
 
+.header-title h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.header-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-left: 10px;
+}
+
 .new-chat-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 16px;
-    background-color: var(--accent-color);
-    color: white;
-    border: none;
-    border-radius: 8px;
+    gap: 6px;
+    padding: 8px 12px;
+    background: transparent;
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
 }
 
 .new-chat-btn:hover {
-    background-color: var(--accent-hover);
-    transform: translateY(-1px);
+    background: var(--bg-secondary);
 }
 
 .new-chat-btn svg {
@@ -111,28 +126,24 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .model-select {
-    padding: 8px 16px;
-    background-color: var(--bg-secondary);
+    padding: 8px 12px;
+    background: var(--bg-primary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 14px;
     cursor: pointer;
     min-width: 200px;
-    transition: all 0.3s ease;
-    position: relative;
+    transition: all 0.2s ease;
 }
 
 .model-select:hover {
-    background-color: var(--bg-tertiary);
-    border-color: var(--accent-color);
-    transform: translateY(-1px);
+    background: var(--bg-secondary);
 }
 
 .model-select:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+    border-color: var(--text-primary);
 }
 
 .tts-selector {
@@ -149,26 +160,23 @@ button:active, .chat-session:active, .example-prompt:active {
 
 .tts-select {
     padding: 8px 12px;
-    background-color: var(--bg-secondary);
+    background: var(--bg-primary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 6px;
     font-size: 13px;
     cursor: pointer;
     min-width: 140px;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .tts-select:hover {
-    background-color: var(--bg-tertiary);
-    border-color: var(--accent-color);
-    transform: translateY(-1px);
+    background: var(--bg-secondary);
 }
 
 .tts-select:focus {
     outline: none;
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(16, 163, 127, 0.1);
+    border-color: var(--text-primary);
 }
 
 /* Chat Container */
@@ -193,13 +201,10 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .welcome-content h1 {
-    font-size: 36px;
+    font-size: 32px;
     margin-bottom: 8px;
-    background: linear-gradient(135deg, var(--accent-color), #60a5fa);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 700;
+    color: var(--text-primary);
+    font-weight: 600;
 }
 
 .welcome-subtitle {
@@ -219,18 +224,16 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .guide-card {
-    background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-    padding: 24px;
-    border-radius: 16px;
+    background: var(--bg-primary);
+    padding: 20px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
     text-align: center;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
 }
 
 .guide-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent-color);
-    box-shadow: 0 8px 24px rgba(16, 163, 127, 0.15);
+    background: var(--bg-secondary);
 }
 
 .guide-icon {
@@ -279,13 +282,13 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .model-tag {
-    background: var(--bg-primary);
-    color: var(--accent-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
     padding: 4px 12px;
     border-radius: 12px;
     font-size: 12px;
     font-weight: 500;
-    border: 1px solid var(--accent-color);
+    border: 1px solid var(--border-color);
 }
 
 /* Prompts Section */
@@ -316,26 +319,23 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .example-prompt {
-    padding: 16px 20px;
-    background-color: var(--bg-secondary);
+    padding: 14px 16px;
+    background: var(--bg-primary);
     color: var(--text-primary);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     text-align: left;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     gap: 12px;
-    font-weight: 500;
+    font-weight: 400;
 }
 
 .example-prompt:hover {
-    background-color: var(--bg-tertiary);
-    border-color: var(--accent-color);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(16, 163, 127, 0.2);
+    background: var(--bg-secondary);
 }
 
 .example-prompt:active {
@@ -355,7 +355,7 @@ button:active, .chat-session:active, .example-prompt:active {
 .messages {
     display: flex;
     flex-direction: column;
-    padding: 20px;
+    padding: 0;
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
@@ -364,8 +364,16 @@ button:active, .chat-session:active, .example-prompt:active {
 .message {
     display: flex;
     gap: 16px;
-    margin-bottom: 24px;
+    padding: 24px 20px;
     animation: fadeIn 0.3s ease-in;
+}
+
+.message.user {
+    background: var(--bg-primary);
+}
+
+.message.assistant {
+    background: var(--bg-secondary);
 }
 
 @keyframes fadeIn {
@@ -380,30 +388,43 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .message-avatar {
-    width: 36px;
-    height: 36px;
-    border-radius: 6px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
+    font-weight: 500;
     flex-shrink: 0;
+    font-size: 14px;
 }
 
 .message.user .message-avatar {
-    background-color: var(--accent-color);
-    color: white;
+    background-color: var(--text-primary);
+    color: var(--bg-primary);
 }
 
 .message.assistant .message-avatar {
-    background-color: var(--bg-tertiary);
-    color: var(--accent-color);
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .message-content {
     flex: 1;
     line-height: 1.6;
     position: relative;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+}
+
+.message.user .message-content {
+    background: transparent;
+}
+
+.message.assistant .message-content {
+    background: transparent;
 }
 
 .message-actions {
@@ -433,15 +454,14 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .speaker-btn:hover {
-    background-color: var(--bg-hover);
-    border-color: var(--accent-color);
-    color: var(--accent-color);
+    background: var(--bg-secondary);
+    color: var(--text-primary);
 }
 
 .speaker-btn.playing {
-    background-color: var(--accent-color);
-    border-color: var(--accent-color);
-    color: white;
+    background: var(--text-primary);
+    border-color: var(--text-primary);
+    color: var(--bg-primary);
 }
 
 .speaker-btn svg {
@@ -501,7 +521,7 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .message-text blockquote {
-    border-left: 3px solid var(--accent-color);
+    border-left: 3px solid var(--text-primary);
     padding-left: 16px;
     margin: 12px 0;
     color: var(--text-secondary);
@@ -515,14 +535,13 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .message-text a {
-    color: var(--accent-color);
-    text-decoration: none;
-    transition: color 0.2s;
+    color: var(--text-primary);
+    text-decoration: underline;
+    transition: opacity 0.2s;
 }
 
 .message-text a:hover {
-    color: var(--accent-hover);
-    text-decoration: underline;
+    opacity: 0.7;
 }
 
 .message-text strong {
@@ -538,13 +557,14 @@ button:active, .chat-session:active, .example-prompt:active {
     width: 100%;
     border-collapse: collapse;
     margin: 16px 0;
-    background-color: var(--bg-secondary);
-    border-radius: 8px;
+    background-color: var(--bg-primary);
+    border-radius: 4px;
     overflow: hidden;
+    border: 1px solid var(--border-color);
 }
 
 .message-text table.markdown-table thead {
-    background-color: var(--bg-tertiary);
+    background-color: var(--bg-secondary);
 }
 
 .message-text table.markdown-table th {
@@ -552,7 +572,7 @@ button:active, .chat-session:active, .example-prompt:active {
     text-align: left;
     font-weight: 600;
     color: var(--text-primary);
-    border-bottom: 2px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .message-text table.markdown-table td {
@@ -566,13 +586,13 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .message-text table.markdown-table tbody tr:hover {
-    background-color: var(--bg-hover);
+    background-color: var(--bg-secondary);
 }
 
 .message-text pre {
     background-color: var(--bg-secondary);
     padding: 16px;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow-x: auto;
     margin: 12px 0;
     border: 1px solid var(--border-color);
@@ -632,9 +652,9 @@ button:active, .chat-session:active, .example-prompt:active {
 
 /* Input Container */
 .input-container {
-    padding: 20px 24px;
+    padding: 20px;
     border-top: 1px solid var(--border-color);
-    background-color: var(--bg-primary);
+    background: var(--bg-primary);
 }
 
 .input-wrapper {
@@ -643,15 +663,15 @@ button:active, .chat-session:active, .example-prompt:active {
     display: flex;
     gap: 12px;
     align-items: flex-end;
-    background-color: var(--bg-secondary);
+    background: var(--bg-primary);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 24px;
     padding: 12px 16px;
     transition: border-color 0.2s;
 }
 
 .input-wrapper:focus-within {
-    border-color: var(--accent-color);
+    border-color: var(--text-primary);
 }
 
 #messageInput {
@@ -672,26 +692,26 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .send-btn {
-    background-color: var(--accent-color);
+    background: var(--text-primary);
     border: none;
-    width: 36px;
-    height: 36px;
-    border-radius: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--bg-primary);
     transition: all 0.2s;
     flex-shrink: 0;
 }
 
 .send-btn:hover:not(:disabled) {
-    background-color: var(--accent-hover);
+    opacity: 0.8;
 }
 
 .send-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.3;
     cursor: not-allowed;
 }
 
@@ -708,7 +728,7 @@ button:active, .chat-session:active, .example-prompt:active {
 
 /* Scrollbar */
 .chat-container::-webkit-scrollbar {
-    width: 8px;
+    width: 6px;
 }
 
 .chat-container::-webkit-scrollbar-track {
@@ -716,12 +736,12 @@ button:active, .chat-session:active, .example-prompt:active {
 }
 
 .chat-container::-webkit-scrollbar-thumb {
-    background: var(--bg-tertiary);
-    border-radius: 4px;
+    background: var(--border-color);
+    border-radius: 3px;
 }
 
 .chat-container::-webkit-scrollbar-thumb:hover {
-    background: var(--border-color);
+    background: var(--text-secondary);
 }
 
 /* Loading State */
@@ -729,8 +749,8 @@ button:active, .chat-session:active, .example-prompt:active {
     display: inline-block;
     width: 20px;
     height: 20px;
-    border: 3px solid var(--bg-tertiary);
-    border-top-color: var(--accent-color);
+    border: 3px solid var(--bg-secondary);
+    border-top-color: var(--text-primary);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
@@ -742,12 +762,10 @@ button:active, .chat-session:active, .example-prompt:active {
 /* Pulse highlight animation for model selector */
 @keyframes pulse-highlight {
     0%, 100% {
-        box-shadow: 0 0 0 0 rgba(16, 163, 127, 0);
         border-color: var(--border-color);
     }
     50% {
-        box-shadow: 0 0 0 8px rgba(16, 163, 127, 0.3);
-        border-color: var(--accent-color);
+        border-color: var(--text-primary);
     }
 }
 
@@ -888,18 +906,18 @@ button:active, .chat-session:active, .example-prompt:active {
     }
     
     .messages {
-        padding: 12px;
+        padding: 0;
     }
     
     .message {
         gap: 12px;
-        margin-bottom: 20px;
+        padding: 20px 16px;
     }
     
     .message-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 14px;
+        width: 28px;
+        height: 28px;
+        font-size: 13px;
     }
     
     .message-text {
@@ -952,13 +970,13 @@ button:active, .chat-session:active, .example-prompt:active {
     }
     
     .send-btn {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
     
     .send-btn svg {
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
     }
     
     .input-footer small {
@@ -1063,18 +1081,18 @@ button:active, .chat-session:active, .example-prompt:active {
     }
     
     .messages {
-        padding: 10px;
+        padding: 0;
     }
     
     .message {
         gap: 10px;
-        margin-bottom: 16px;
+        padding: 16px 12px;
     }
     
     .message-avatar {
-        width: 30px;
-        height: 30px;
-        font-size: 13px;
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
     }
     
     .message-text {
@@ -1143,13 +1161,13 @@ button:active, .chat-session:active, .example-prompt:active {
     }
     
     .send-btn {
-        width: 32px;
-        height: 32px;
+        width: 28px;
+        height: 28px;
     }
     
     .send-btn svg {
-        width: 16px;
-        height: 16px;
+        width: 14px;
+        height: 14px;
     }
     
     .input-footer {

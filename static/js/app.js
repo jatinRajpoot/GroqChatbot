@@ -1,5 +1,6 @@
 // Global state
 let currentModel = 'mixtral-8x7b-32768';
+let currentProvider = 'groq';
 let currentTTSMode = 'playai-tts|Fritz-PlayAI'; // Format: "model|voice" or "disabled"
 let isLoading = false;
 let chatHistory = [];
@@ -12,15 +13,18 @@ const messagesContainer = document.getElementById('messages');
 const chatContainer = document.getElementById('chatContainer');
 const welcomeScreen = document.getElementById('welcomeScreen');
 const modelSelect = document.getElementById('modelSelect');
+const providerSelect = document.getElementById('providerSelect');
 const newChatBtn = document.getElementById('newChatBtn');
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
-const sidebarToggle = document.getElementById('sidebarToggle');
-const sidebar = document.getElementById('sidebar');
-const sidebarOverlay = document.getElementById('sidebarOverlay');
 const ttsSelect = document.getElementById('ttsSelect');
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore preferred provider
+    const savedProvider = localStorage.getItem('provider');
+    if (savedProvider) {
+        currentProvider = savedProvider;
+        if (providerSelect) providerSelect.value = savedProvider;
+    }
     loadModels();
     loadChatHistory();
     // Sessions removed - no database
@@ -48,6 +52,13 @@ function setupEventListeners() {
     
     modelSelect.addEventListener('change', (e) => {
         currentModel = e.target.value;
+        localStorage.setItem('preferred_model_' + currentProvider, currentModel);
+    });
+
+    providerSelect.addEventListener('change', async (e) => {
+        currentProvider = e.target.value;
+        localStorage.setItem('provider', currentProvider);
+        await loadModels();
     });
     
     ttsSelect.addEventListener('change', (e) => {
@@ -66,13 +77,6 @@ function setupEventListeners() {
     });
     
     newChatBtn.addEventListener('click', startNewChat);
-    clearHistoryBtn.addEventListener('click', clearHistory);
-    sidebarToggle.addEventListener('click', toggleSidebar);
-    
-    // Close sidebar when overlay is clicked (mobile)
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', closeSidebar);
-    }
     
     // Example prompts
     document.querySelectorAll('.example-prompt').forEach(btn => {
@@ -202,24 +206,37 @@ function loadTTSPreference() {
 // Load available models
 async function loadModels() {
     try {
-        const response = await fetch('/api/models');
+        console.log(`Loading models for provider: ${currentProvider}`);
+        const response = await fetch(`/api/models?provider=${encodeURIComponent(currentProvider)}`);
         const data = await response.json();
+        
+        console.log(`Response from /api/models:`, data);
         
         if (data.success) {
             modelSelect.innerHTML = '';
             
+            console.log(`Found ${data.models.length} models`);
+            
             data.models.forEach(model => {
                 const option = document.createElement('option');
                 option.value = model.id;
-                option.textContent = model.id;
+                option.textContent = model.name || model.id;
                 modelSelect.appendChild(option);
             });
             
-            // Set default model
+            // Set default/preferred model
             if (data.models.length > 0) {
-                currentModel = data.models[0].id;
+                const preferred = localStorage.getItem('preferred_model_' + currentProvider);
+                const found = data.models.find(m => m.id === preferred);
+                currentModel = (found ? found.id : data.models[0].id);
                 modelSelect.value = currentModel;
+                console.log(`Selected model: ${currentModel}`);
+            } else {
+                console.warn('No models found for provider:', currentProvider);
             }
+        } else {
+            console.error('Failed to load models:', data.error);
+            showError(data.error || 'Failed to load models. Using default model.');
         }
     } catch (error) {
         console.error('Error loading models:', error);
@@ -243,85 +260,7 @@ async function loadChatHistory() {
     }
 }
 
-// Load all sessions for sidebar
-async function loadSessions() {
-    try {
-        const response = await fetch('/api/sessions');
-        const data = await response.json();
-        
-        if (data.success && data.sessions) {
-            renderSessions(data.sessions, data.current_session);
-        }
-    } catch (error) {
-        console.error('Error loading sessions:', error);
-    }
-}
-
-// Render sessions in sidebar
-function renderSessions(sessions, currentSessionId) {
-    const chatSessions = document.getElementById('chatSessions');
-    if (!chatSessions) return;
-    
-    chatSessions.innerHTML = '';
-    
-    sessions.forEach(session => {
-        const sessionDiv = document.createElement('div');
-        sessionDiv.className = 'chat-session';
-        sessionDiv.dataset.sessionId = session.session_id;
-        
-        // Mark active session
-        if (session.session_id === currentSessionId) {
-            sessionDiv.classList.add('active');
-        }
-        
-        // Truncate title if too long
-        const title = session.title || `Chat ${session.session_id.substring(0, 8)}`;
-        const displayTitle = title.length > 30 ? title.substring(0, 27) + '...' : title;
-        
-        // Create session content
-        const sessionContent = document.createElement('div');
-        sessionContent.style.display = 'flex';
-        sessionContent.style.justifyContent = 'space-between';
-        sessionContent.style.alignItems = 'center';
-        
-        const titleSpan = document.createElement('span');
-        titleSpan.textContent = displayTitle;
-        titleSpan.title = title; // Show full title on hover
-        
-        const countSpan = document.createElement('span');
-        countSpan.style.fontSize = '11px';
-        countSpan.style.opacity = '0.6';
-        countSpan.textContent = `${session.message_count || 0} msgs`;
-        
-        sessionContent.appendChild(titleSpan);
-        sessionContent.appendChild(countSpan);
-        sessionDiv.appendChild(sessionContent);
-        
-        // Add click handler to switch sessions
-        sessionDiv.addEventListener('click', () => switchSession(session.session_id));
-        
-        chatSessions.appendChild(sessionDiv);
-    });
-}
-
-// Switch to a different session
-async function switchSession(sessionId) {
-    try {
-        const response = await fetch('/api/switch-session', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ session_id: sessionId })
-        });
-        
-        if (response.ok) {
-            // Reload the page to switch session
-            window.location.reload();
-        }
-    } catch (error) {
-        console.error('Error switching session:', error);
-        showError('Failed to switch session');
-    }
-}
+// (Removed) Sessions UI and switching logic - not used in minimalist mode
 
 // Send message
 async function sendMessage() {
@@ -353,7 +292,8 @@ async function sendMessage() {
             },
             body: JSON.stringify({
                 message: message,
-                model: currentModel
+                model: currentModel,
+                provider: currentProvider
             })
         });
         
@@ -572,7 +512,7 @@ function showWelcomeScreen() {
 
 // Start new chat
 async function startNewChat() {
-    if (confirm('Start a new chat? Current conversation will be saved.')) {
+    if (confirm('Start a new chat? Current conversation will be cleared.')) {
         try {
             const response = await fetch('/api/new-chat', {
                 method: 'POST',
@@ -597,45 +537,9 @@ async function startNewChat() {
     }
 }
 
-// Clear history
-async function clearHistory() {
-    if (confirm('Clear chat history? This cannot be undone.')) {
-        try {
-            const response = await fetch('/api/clear', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            
-            const data = await response.json();
-            
-            if (data.success) {
-                chatHistory = [];
-                showWelcomeScreen();
-            }
-        } catch (error) {
-            console.error('Error clearing history:', error);
-            showError('Failed to clear history');
-        }
-    }
-}
+// (Removed) Clear history via UI - not exposed in minimalist mode
 
-// Toggle sidebar
-function toggleSidebar() {
-    sidebar.classList.toggle('open');
-    if (sidebarOverlay) {
-        sidebarOverlay.classList.toggle('active');
-    }
-}
-
-// Close sidebar (for mobile)
-function closeSidebar() {
-    sidebar.classList.remove('open');
-    if (sidebarOverlay) {
-        sidebarOverlay.classList.remove('active');
-    }
-}
+// (Removed) Sidebar toggle/overlay - no sidebar in minimalist mode
 
 // Highlight model selector on first visit
 function highlightModelSelector() {
