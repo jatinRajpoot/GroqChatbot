@@ -4,8 +4,39 @@ A modern, ChatGPT-like web application built with Flask and powered by Groq's AP
 
 ![Groq Chatbot](https://img.shields.io/badge/Python-3.11+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.0.0-green.svg)
+![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)
 ![Docker](https://img.shields.io/badge/Docker-Ready-blue.svg)
 ![License](https://img.shields.io/badge/License-MIT-yellow.svg)
+
+## 🎉 New: Next.js Frontend Available!
+
+The frontend has been migrated to **Next.js 14** with **enhanced button animations** while preserving the exact same minimalist black and white UI theme! 
+
+- ✨ **Smooth animations** with Framer Motion
+- ⚡ **Better performance** with React optimization
+- 🎨 **Same beautiful UI** - zero design changes
+- 🔄 **Enhanced interactions** - improved button hover effects and transitions
+
+### Quick Start with Next.js:
+```bash
+# Install dependencies (first time)
+npm install
+
+# Run both Flask backend + Next.js frontend
+./start-dev.sh       # Linux/Mac
+start-dev.bat        # Windows
+
+# Access at http://localhost:3000
+```
+
+**📚 Documentation:**
+- **[QUICK_START.md](QUICK_START.md)** - Get started in 2 minutes!
+- **[NEXTJS_README.md](NEXTJS_README.md)** - Complete Next.js guide
+- **[MIGRATION_SUMMARY.md](MIGRATION_SUMMARY.md)** - What changed technically
+
+You can choose to use either:
+- **Original Flask + Templates** (this README)
+- **Next.js Frontend + Flask Backend** (see docs above)
 
 ## Features ✨
 
